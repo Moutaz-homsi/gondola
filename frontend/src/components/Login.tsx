@@ -1,37 +1,31 @@
-import * as React from "react";
+import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
-import * as yup from 'yup';
-
+import * as yup from "yup";
+import { useAuthContext } from "../context/AuthContext";
 import { Formik } from "formik";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = yup.object({
-  email: yup
-    .string()
-    .email('Enter a valid email')
-    .required('Email is required'),
-  password: yup
-    .string()
-    .min(8, 'Password should be of minimum 8 characters length')
-    .required('Password is required'),
+  email: yup.string().email("Enter a valid email").required("Email is required"),
+  password: yup.string().min(8, "Password should be of minimum 8 characters length").required("Password is required"),
 });
 
+// interface LoginProps {
+// setIsLoggedIn: (isLoggedIn: boolean) => void
+// }
+
 export default function Login() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-  };
+  const { setUser } = useAuthContext();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -40,6 +34,10 @@ export default function Login() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        maxWidth: 440,
+        margin: "auto",
+        minHeight: "100vh",
+        justifyContent: "center",
       }}
     >
       <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
@@ -61,13 +59,37 @@ export default function Login() {
             return errors;
           }}
           validationSchema={validationSchema}
-          onSubmit={(values, { setSubmitting }) => {
-            setTimeout(() => {
-              alert(JSON.stringify(values, null, 2));
-              setSubmitting(false);
-            }, 400);
+          onSubmit={async (values, { setSubmitting }) => {
+            setIsLoading(true);
+            try {
+              const value = {
+                identifier: values.email,
+                password: values.password,
+              };
+              const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/local`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(value),
+              });
+
+              const data = await response.json();
+              if (data?.error) {
+                throw data?.error;
+              } else {
+                localStorage.setItem("gondolaJwt", data.jwt);
+                setUser(data.user);
+                navigate('/')
+                // TODO : Show success message from snack provider
+              }
+            } catch (error: any) {
+              console.error(error);
+              setError(error?.message ?? "Something went wrong!");
+            } finally {
+              setIsLoading(false);
+            }
           }}
-          
         >
           {({
             values,
@@ -77,6 +99,7 @@ export default function Login() {
             handleBlur,
             handleSubmit,
             isSubmitting,
+            isValid,
             /* and other goodies */
           }) => (
             <form onSubmit={handleSubmit}>
@@ -112,7 +135,7 @@ export default function Login() {
                 error={touched.password && Boolean(errors.password)}
                 helperText={touched.password && errors.password}
               />
-              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+              <Button disabled={!isValid} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
                 Sign In
               </Button>
             </form>
