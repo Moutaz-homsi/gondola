@@ -1,0 +1,12 @@
+{
+  "collectionName": "components_question_choices",
+  "info": {
+    "displayName": "Choices"
+  },
+  "options": {},
+  "attributes": {
+    "choiceText": {
+      "type": "string"
+    }
+  }
+}
