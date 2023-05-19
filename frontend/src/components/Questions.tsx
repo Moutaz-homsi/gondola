@@ -32,6 +32,7 @@ function Questions() {
 
   useEffect(() => {
     fetchQuestion();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
