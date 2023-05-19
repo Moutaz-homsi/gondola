@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../context/AuthContext";
+import Questions from "./Questions";
 
 function Home() {
   const { user } = useAuthContext();
@@ -39,6 +40,9 @@ function Home() {
             </Button>
           </>
         )}
+        {user &&
+            <Questions />
+        }
       </Box>
     </>
   );
