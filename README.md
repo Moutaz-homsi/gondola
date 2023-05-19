@@ -3,10 +3,10 @@
 `cp .env.example .env`
 `yarn install`
 
-## For development env
+### For development env
 `yarn develop`
 
-## For production env
+### For production env
 Edit .env as you want and then =>
 `yarn build`
 `yarn start`
@@ -16,10 +16,10 @@ Edit .env as you want and then =>
 `cp .env.example .env`
 `yarn install`
 
-## For development env
+### For development env
 `yarn start`
 
-## For production env
+### For production env
 Edit .env as you want and then =>
 `yarn build`
 `yarn dlx serve -s build`
