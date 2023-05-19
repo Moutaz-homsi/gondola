@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
+import LoadingButton from '@mui/lab/LoadingButton';
 
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
@@ -10,6 +10,7 @@ import * as yup from "yup";
 import { useAuthContext } from "../context/AuthContext";
 import { Formik } from "formik";
 import { useNavigate } from "react-router-dom";
+import { Alert } from "@mui/material";
 
 const validationSchema = yup.object({
   email: yup.string().email("Enter a valid email").required("Email is required"),
@@ -103,8 +104,8 @@ export default function Login() {
             /* and other goodies */
           }) => (
             <form onSubmit={handleSubmit}>
-              {JSON.stringify(values)}
-              {JSON.stringify(errors)}
+              {/* {JSON.stringify(values)}
+              {JSON.stringify(errors)} */}
               <TextField
                 margin="normal"
                 required
@@ -135,9 +136,10 @@ export default function Login() {
                 error={touched.password && Boolean(errors.password)}
                 helperText={touched.password && errors.password}
               />
-              <Button disabled={!isValid} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+              <LoadingButton loading={isLoading} disabled={!isValid} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
                 Sign In
-              </Button>
+              </LoadingButton>
+              {error && <Alert severity="error">{error}</Alert>}
             </form>
           )}
         </Formik>

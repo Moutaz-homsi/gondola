@@ -21,8 +21,6 @@ module.exports = createCoreController(uid, ({ strapi }) => ({
 
         const previousAnswersIds = previousAnswers.answers.map(ans => ans.questionId)
 
-        console.log(previousAnswersIds)
-
         const questionsCount = await strapi.db.query(uid).count({
             where: {
                 id: {
@@ -30,6 +28,10 @@ module.exports = createCoreController(uid, ({ strapi }) => ({
                 }
             }
         })
+
+        if ( questionsCount == 0 ) {
+            return { stat: 'You have answered all the questions !' }
+        }
 
         const randomOffset = Math.floor(Math.random() * questionsCount);
 
@@ -44,6 +46,7 @@ module.exports = createCoreController(uid, ({ strapi }) => ({
         })
 
 
-        return { previousAnswers, randomQuestion }
+
+        return { stat: 'Ok!', randomQuestion }
     }
 }));

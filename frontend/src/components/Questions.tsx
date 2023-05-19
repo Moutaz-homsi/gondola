@@ -1,11 +1,13 @@
 import { Box } from "@mui/material";
 import Question from "./Question";
 import { useEffect, useState } from "react";
+import Alert from "@mui/material/Alert";
 
 function Questions() {
   const authToken = localStorage.getItem("gondolaJwt");
 
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
+  const [message, setMessage] = useState("");
 
   const fetchQuestion = async () => {
     try {
@@ -13,8 +15,15 @@ function Questions() {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       const respo = await response.json();
-      if (respo.randomQuestion) {
-        setData(respo.randomQuestion)
+
+      if (!respo.error) {
+        if (respo.stat === "Ok!") {
+          setData(respo.randomQuestion);
+        } else {
+          setMessage(respo.stat);
+        }
+      } else {
+        console.error(respo.error);
       }
     } catch (error) {
       console.error(error);
@@ -27,7 +36,7 @@ function Questions() {
 
   return (
     <Box sx={{ minHeight: "calc(100vh - 96px)", display: "flex", justifyContent: "center", alignItems: "center" }}>
-      <Question question={data} />
+      {!message ? <Question key={data?.id} question={data} fetchQuestion={fetchQuestion} /> : <Alert severity="success">{message}</Alert>}      
     </Box>
   );
 }
