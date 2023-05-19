@@ -5,31 +5,51 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 
 interface QuestionProps {
-    fetchQuestion?: () => void
+    fetchQuestion?: () => void;
+    question: any
 }
 
-function Question({fetchQuestion}: QuestionProps) {
+function Question({fetchQuestion, question}: QuestionProps) {
+
+    const authToken = localStorage.getItem("gondolaJwt");
+
+    if ( !question ) {
+        return(<p>Loading ....</p>)
+    }
+
   return (
     <Paper variant="outlined" sx={{ py: 1, px: 4, maxWidth: '100%', width: 500 }}>
-      <h2>This is sample title</h2>
+      <h2>{question.title}</h2>
       <Formik
         initialValues={{
           answers: [],
         }}
         onSubmit={async (values) => {
-          alert(JSON.stringify(values, null, 2));
+            try {                
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/add-answer`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({...values, questionId: question.id}),
+                  });
+                  console.log(response)
+            } catch (error) {
+                console.error(error)
+            }
         }}
       >
         {({ values, handleChange }) => (
           <Form>
             {JSON.stringify(values)}
             <FormGroup>
-              {["1", "2", "3"].map((item) => (
+              {question.choices.map((choice: any) => (
                 <FormControlLabel
                   control={<Checkbox />}
-                  label="Label"
+                  label={choice.choiceText}
                   name="answers"
-                  value={item}
+                  value={choice.choiceText}
                   sx={choiceStyle}
                   onChange={handleChange}
                 />

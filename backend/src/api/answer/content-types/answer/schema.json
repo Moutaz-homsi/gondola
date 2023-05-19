@@ -26,6 +26,9 @@
       "relation": "manyToOne",
       "target": "api::question.question",
       "inversedBy": "answers"
+    },
+    "questionId": {
+      "type": "string"
     }
   }
 }

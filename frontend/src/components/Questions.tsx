@@ -13,7 +13,9 @@ function Questions() {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       const respo = await response.json();
-      console.log(respo);
+      if (respo.randomQuestion) {
+        setData(respo.randomQuestion)
+      }
     } catch (error) {
       console.error(error);
     }
@@ -23,16 +25,9 @@ function Questions() {
     fetchQuestion();
   }, []);
 
-  useEffect(() => {
-    /*
-    Query logic
-    */
-    console.log("i fire once");
-  }, []);
-
   return (
     <Box sx={{ minHeight: "calc(100vh - 96px)", display: "flex", justifyContent: "center", alignItems: "center" }}>
-      <Question />
+      <Question question={data} />
     </Box>
   );
 }
